@@ -21,10 +21,11 @@ public class MyPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_page, container, false);
-        btnLogin = view.findViewById(R.id.btn_login);
+        btnLogin = view.findViewById(R.id.btn_go_login);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                Intent intent = new Intent(getActivity(), LoginActivity.class);
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 startActivity(intent);
             }

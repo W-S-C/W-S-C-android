@@ -12,13 +12,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.weather_community_android.R;
-import com.example.weather_community_android.model.WeatherDAO;
+import com.example.weather_community_android.model.Temp;
+import com.example.weather_community_android.model.TempClass;
+import com.example.weather_community_android.model.TempItem;
+import com.example.weather_community_android.model.Weather;
+import com.example.weather_community_android.model.WeatherClass;
+import com.example.weather_community_android.model.WeatherItem;
 import com.example.weather_community_android.network.ApiObject;
-import com.example.weather_community_android.network.ITEM;
-import com.example.weather_community_android.network.ITEMS;
-import com.example.weather_community_android.network.WEATHER;
-import com.example.weather_community_android.network.WeatherApiService;
-import com.example.weather_community_android.network.WeatherApiServiceKt;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,7 +26,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import io.reactivex.observers.TestObserver;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -56,6 +55,8 @@ public class MainFragment extends Fragment {
     private TextView humidity;
     private TextView sky;
     private TextView temp;
+    private TextView maxTemp;
+    private TextView minTemp;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,7 +69,10 @@ public class MainFragment extends Fragment {
         humidity = view.findViewById(R.id.tv_humidity);
         sky = view.findViewById(R.id.tv_sky);
         temp = view.findViewById(R.id.tv_temp);
+        maxTemp = view.findViewById(R.id.tv_max_temp);
+        minTemp = view.findViewById(R.id.tv_min_temp);
         getWeather(nx,ny);
+//        getTemp(nx, ny);
         return view;
     }
 
@@ -78,48 +82,44 @@ public class MainFragment extends Fragment {
         baseDate = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.getTime());
         String timeH = new SimpleDateFormat("HH", Locale.getDefault()).format(cal.getTime());
         String timeM = new SimpleDateFormat("HH", Locale.getDefault()).format(cal.getTime());
-        final WeatherDAO weatherDAO = new WeatherDAO();
+        final Weather weather = new Weather();
         baseTime = getBaseTime(timeH, timeM);
 
         if (timeH == "00" && baseTime == "2330") {
             cal.add(Calendar.DATE, -1);
             baseDate = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.getTime());
         }
-        Toast.makeText(getContext(), "함수는 작동됨", Toast.LENGTH_LONG ).show();
         ApiObject.INSTANCE.getRetrofitService().GetWeather(60, 1, "JSON", baseDate, baseTime, nx, ny)
-        .enqueue(new Callback<WEATHER>() {
+        .enqueue(new Callback<WeatherClass>() {
             @Override
-            public void onResponse(Call<WEATHER> call, Response<WEATHER> response) {
-                Toast.makeText(getContext(), "가져왔음", Toast.LENGTH_LONG ).show();
+            public void onResponse(Call<WeatherClass> call, Response<WeatherClass> response) {
 
                 if (response.isSuccessful()) {
-                    List<ITEM> items = new ArrayList<>();
+                    List<WeatherItem> items = new ArrayList<>();
 
                     items = response.body().getResponse().getBody().getItems().getItem();
                     System.out.println(items + "items!!!!!!!!!!!!1");
                     for (int i = 0; i < items.size(); i++) {
                         if(items.get(i).getCategory().equals("PTY")) {
-
-                            System.out.println(items.get(i).getFcstValue() + "items.getFctValue");
-                            weatherDAO.setRainType(items.get(i).getFcstValue());
+                            weather.setRainType(items.get(i).getFcstValue());
                         }
                         if(items.get(i).getCategory().equals("REH"))
-                            weatherDAO.setHumidity(items.get(i).getFcstValue());
+                            weather.setHumidity(items.get(i).getFcstValue());
                         if(items.get(i).getCategory().equals("SKY"))
-                            weatherDAO.setSky(items.get(i).getFcstValue());
+                            weather.setSky(items.get(i).getFcstValue());
                         if(items.get(i).getCategory().equals("T1H"))
-                            weatherDAO.setTemp(items.get(i).getFcstValue());
+                            weather.setTemp(items.get(i).getFcstValue());
                         else
                             continue;
                     }
-                    setWeather(weatherDAO);
+                    setWeather(weather);
                 }
 
 
             }
 
             @Override
-            public void onFailure(Call<WEATHER> call, Throwable t) {
+            public void onFailure(Call<WeatherClass> call, Throwable t) {
                 Log.d("api fail", t.getMessage().toString());
                 System.out.println(t.getMessage() + "api fail!!!!!!!!");
             }
@@ -127,10 +127,54 @@ public class MainFragment extends Fragment {
 
     }
 
-    private void setWeather(WeatherDAO weatherDAO) {
+    private void getTemp(String nx, String ny) {
+        Calendar cal = Calendar.getInstance();
+        baseDate = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.getTime());
+        String timeH = new SimpleDateFormat("HH", Locale.getDefault()).format(cal.getTime());
+        final Temp temp = new Temp();
+        baseTime = getTime(timeH);
+        if (Integer.valueOf(baseTime) >= Integer.valueOf("2000")) {
+            cal.add(Calendar.DATE, -1);
+            baseDate = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.getTime());
+        }
+        ApiObject.INSTANCE.getRetrofitService().GetTemp(10, 1, "JSON", baseDate, baseTime, nx, ny)
+                .enqueue(new Callback<TempClass>() {
+                    @Override
+                    public void onResponse(Call<TempClass> call, Response<TempClass> response) {
+                        Toast.makeText(getContext(), "함수 작동", Toast.LENGTH_SHORT).show();
+                        if (response.isSuccessful()) {
+                            List<TempItem> tempItems = new ArrayList<>();
+                            tempItems = response.body().getResponse().getBody().getItems().getItem();
+                            Log.e("api test", tempItems.toString());
+                            for (int i = 0; i < tempItems.size(); i++) {
+                                if(tempItems.get(i).getCategory().equals("POP")) {
+                                    temp.setRainRation(tempItems.get(i).getFcstValue());
+                                }
+                                if(tempItems.get(i).getCategory().equals("TMX"))
+                                    temp.setMaxTemp(tempItems.get(i).getFcstValue());
+                                if(tempItems.get(i).getCategory().equals("TMN"))
+                                    temp.setMinTemp(tempItems.get(i).getFcstValue());
+                                else
+                                    continue;
+                            }
+                        }
+                        setTemp(temp);
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<TempClass> call, Throwable t) {
+                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                        System.out.println(t.getMessage());
+                        Log.d("api fail", t.getMessage().toString());
+                    }
+                });
+    }
+    private void setWeather(Weather weatherValue) {
         String result = "";
-        System.out.println(weatherDAO.getRainType() + "rainType");
-        switch (weatherDAO.getRainType()) {
+        System.out.println(weatherValue.getRainType() + "rainType");
+        switch (weatherValue.getRainType()) {
             case "0":
                 result = "없음";
                 break;
@@ -160,7 +204,7 @@ public class MainFragment extends Fragment {
                 break;
         }
         String skyResult = "";
-        switch (weatherDAO.getSky()) {
+        switch (weatherValue.getSky()) {
             case "1":
                 skyResult = "맑음";
                 break;
@@ -175,10 +219,16 @@ public class MainFragment extends Fragment {
                 break;
         }
         rainType.setText(result);
-        humidity.setText(weatherDAO.getHumidity() + "%");
+        humidity.setText(weatherValue.getHumidity() + "%");
         sky.setText(skyResult);
-        temp.setText(weatherDAO.getTemp());
+        temp.setText(weatherValue.getTemp());
 
+    }
+
+    private void setTemp(Temp tempValue) {
+        rainRatio.setText(tempValue.getRainRation());
+        maxTemp.setText(tempValue.getMaxTemp());
+        minTemp.setText(tempValue.getMinTemp());
     }
     private String getBaseTime(String h , String m) {
 
@@ -199,5 +249,27 @@ public class MainFragment extends Fragment {
         }
         return result;
 
+    }
+
+    private String getTime(String h) {
+        String result = "";
+        if (h.equals("00") || h.equals("02")||h.equals(03)) {
+            result = "2000";
+        } else if (h.equals("03") || h.equals("04") || h.equals("05")) {
+            result = "2300";
+        } else if (h.equals("06")||h.equals("07")||h.equals("08")) {
+            result = "0200";
+        } else if (h.equals("09") || h.equals("10") || h.equals("11")) {
+            result = "0500";
+        } else if (h.equals("12")||h.equals("13")||h.equals("14")) {
+            result = " 0800";
+        } else if (h.equals("15") || h.equals("16") || h.equals("17")) {
+            result = "1100";
+        } else if (h.equals("18") || h.equals("19") || h.equals("20")) {
+            result = "1400";
+        } else {
+            result = "1700";
+        }
+        return result;
     }
 }

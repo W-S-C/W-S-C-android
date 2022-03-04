@@ -1,9 +1,8 @@
 package com.example.weather_community_android.model
 
-class WeatherDAO {
-    var rainType : String? = null
-    var humidity : String? = null
-    var sky : String? = null
-    var temp : String? = null
-    var fcstTime : String? = null
-}
+data class WeatherClass (val response: WeatherResponse)
+data class WeatherResponse (val header : WeatherHeader, val body : WeatherBody)
+data class WeatherHeader (val resultCode : Int, val resultMsg : String)
+data class WeatherBody (val dataType : String, val items : WeatherItems, val totalCount : Int)
+data class WeatherItems(val item : List<WeatherItem>)
+data class WeatherItem(val category : String, val fcstDate : String, val fcstTime : String, val fcstValue : String)
