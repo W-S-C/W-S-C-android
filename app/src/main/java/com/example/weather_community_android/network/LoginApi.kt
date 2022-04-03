@@ -9,5 +9,5 @@ import retrofit2.http.POST
 
 interface LoginApi {
     @POST("/user/login")
-    fun login(@Body body: JsonObject) : Single<String>
+    fun login(@Body body: JsonObject) : Single<LoginDAO>
 }

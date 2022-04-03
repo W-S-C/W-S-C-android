@@ -5,3 +5,7 @@ data class LoginDAO (
         var responseMessage : String,
         var data : String
         )
+data class LoginEntity(
+        val id : String,
+        var pwd : String
+)

@@ -52,30 +52,30 @@ public class LoginActivity2 extends AppCompatActivity {
                 JsonObject inputJson = new JsonObject();
                 inputJson.addProperty("userName", id);
                 inputJson.addProperty("pwd", pwd);
-                login(inputJson);
+//                login(inputJson);
 
             }
         });
     }
 
-    private void login(JsonObject input) {
-
-        ApiService.INSTANCE.getLoginService().login(input)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        it -> {
-                            Toast.makeText(getApplicationContext(), "로그인 성공", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(this,MainActivity.class);
-                            intent.putExtra("token", it);
-                            Log.e("수빈: 토큰 ", it);
-                            startActivity(intent);
-                            finish();
-                        }, it->{
-                            Log.e("수빈: 로그인", it.getMessage());
-                            Toast.makeText(getApplicationContext(), it.getMessage(),Toast.LENGTH_SHORT).show();
-                        }
-                );
-
-    }
+//    private void login(JsonObject input) {
+//
+//        ApiService.INSTANCE.getLoginService().login(input)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(
+//                        it -> {
+//                            Toast.makeText(getApplicationContext(), "로그인 성공", Toast.LENGTH_SHORT).show();
+//                            Intent intent = new Intent(this,MainActivity.class);
+//                            intent.putExtra("token", it);
+//                            Log.e("수빈: 토큰 ", it);
+//                            startActivity(intent);
+//                            finish();
+//                        }, it->{
+//                            Log.e("수빈: 로그인", it.getMessage());
+//                            Toast.makeText(getApplicationContext(), it.getMessage(),Toast.LENGTH_SHORT).show();
+//                        }
+//                );
+//
+//    }
 }
