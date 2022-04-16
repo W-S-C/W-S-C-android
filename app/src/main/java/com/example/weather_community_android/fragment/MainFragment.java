@@ -71,8 +71,8 @@ public class MainFragment extends Fragment {
         temp = view.findViewById(R.id.tv_temp);
         maxTemp = view.findViewById(R.id.tv_max_temp);
         minTemp = view.findViewById(R.id.tv_min_temp);
-        getWeather(nx,ny);
-//        getTemp(nx, ny);
+//        getWeather(nx,ny);
+        getTemp(nx, ny);
         return view;
     }
 
@@ -146,9 +146,10 @@ public class MainFragment extends Fragment {
                             List<TempItem> tempItems = new ArrayList<>();
                             tempItems = response.body().getResponse().getBody().getItems().getItem();
                             Log.e("api test", tempItems.toString());
+                            System.out.println(tempItems);
                             for (int i = 0; i < tempItems.size(); i++) {
                                 if(tempItems.get(i).getCategory().equals("POP")) {
-                                    temp.setRainRation(tempItems.get(i).getFcstValue());
+                                    temp.setRainRatio(tempItems.get(i).getFcstValue());
                                 }
                                 if(tempItems.get(i).getCategory().equals("TMX"))
                                     temp.setMaxTemp(tempItems.get(i).getFcstValue());
@@ -226,7 +227,7 @@ public class MainFragment extends Fragment {
     }
 
     private void setTemp(Temp tempValue) {
-        rainRatio.setText(tempValue.getRainRation());
+        rainRatio.setText(tempValue.getRainRatio());
         maxTemp.setText(tempValue.getMaxTemp());
         minTemp.setText(tempValue.getMinTemp());
     }

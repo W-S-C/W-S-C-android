@@ -30,7 +30,7 @@ interface WeatherApiService {
     fun GetTemp(
             @Query("numOfRows") num_of_rows: Int,
             @Query("pageNo") page_no: Int,
-            @Query("data_type") dataType: String,
+            @Query("data_type") data_type: String,
             @Query("base_data") base_date: String,
             @Query("base_time") base_time: String,
             @Query("nx") nx : String,

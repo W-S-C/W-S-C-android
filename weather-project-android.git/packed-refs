@@ -1,0 +1,6 @@
+# pack-refs with: peeled fully-peeled sorted 
+6ccd508a0af4f38f53ed5277126bec2b8173cb00 refs/heads/feat/1-weather_api
+2df68727ced321394821c881eecdcb54dc244302 refs/heads/feat/2-login
+15481190fa5afbe3aed3508e57a500861c5cc498 refs/heads/main
+117f00e106dfdf99dadf602ac29570bfab88f22a refs/pull/3/head
+2df68727ced321394821c881eecdcb54dc244302 refs/pull/4/head
